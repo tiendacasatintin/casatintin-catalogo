@@ -670,7 +670,7 @@ function pickImgs(set, n){
   const tech = pickImgs(TECH, 4);
   if (tech.length >= 3) slides.push(`<section class="hs tech" aria-roledescription="diapositiva" aria-label="Electrónica y computación"><div class="hsin"><span class="hpill">TECNOLOGÍA</span><h2>Electrónica y computación</h2><p>Accesorios para tu casa y oficina</p><div class="hround">${tech.map(u => `<span><img src="${u}" alt="" loading="lazy"></span>`).join('')}</div><button class="hlink" type="button" data-hcat="tech">Ver productos</button></div></section>`);
   slides.push(`<section class="hs how" aria-roledescription="diapositiva" aria-label="Cómo comprar"><div class="hsin"><span class="hpill">CÓMO COMPRAR</span><h2>Pide por WhatsApp y paga como prefieras</h2><p>Entrega personal o envío a domicilio.</p>
-    <div class="paym"><span>${BANK}Transferencia</span><span>${DATA.mpLogo ? `<img src="${DATA.mpLogo}" alt="Mercado Pago">` : CARD + 'Mercado Pago'}</span></div>
+    <div class="paym"><span>${BANK}Transferencia</span><span>${CARD}Débito o crédito${DATA.mpLogo ? `<img src="${DATA.mpLogo}" alt="Mercado Pago">` : ''}</span></div>
     <a class="hwa" href="${esc(waLink('Hola! Vi el catálogo y quiero hacer una consulta.'))}" target="_blank" rel="noopener">${WA_ICON}Chatea con nosotros</a></div></section>`);
   track.insertAdjacentHTML('beforeend', slides.join(''));
   const all = [...track.children], n = all.length, dots = $('#hdots'), slider = track.parentElement;
