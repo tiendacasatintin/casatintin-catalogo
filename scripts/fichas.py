@@ -132,8 +132,46 @@ PAGE = """<!doctype html>
 """
 
 
+WA_PAGE = """<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escríbenos por WhatsApp · {store}</title>
+<meta name="description" content="Toca para abrir el chat de WhatsApp con {store}.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{store}">
+<meta property="og:title" content="Escríbenos por WhatsApp · {store}">
+<meta property="og:description" content="Toca para abrir el chat y te respondemos al tiro 💬">
+<meta property="og:url" content="{site}/whatsapp/">
+<meta property="og:image" content="{site}/preview.jpg">
+<meta name="robots" content="noindex">
+<script>location.replace({wa_js});</script>
+<style>body{{margin:0;min-height:100vh;display:grid;place-items:center;font:16px/1.5 system-ui,sans-serif;background:#F6F1EA;color:#2E241E;text-align:center;padding:24px}}a{{display:inline-block;margin-top:10px;background:#128C4B;color:#fff;text-decoration:none;font-weight:600;border-radius:999px;padding:12px 22px}}</style>
+</head>
+<body>
+<main><p>Abriendo el chat de WhatsApp de {store}…</p><a href="{wa}">Abrir WhatsApp</a></main>
+</body>
+</html>
+"""
+
+
+def build_whatsapp(out_dir, data, store):
+    """Link corto con marca: tienda.casatintin.cl/whatsapp abre el chat (el número sale del catálogo publicado)."""
+    num = re.sub(r'\D', '', str(data.get('whatsapp') or ''))
+    if len(num) < 8:
+        return
+    wa = f'https://wa.me/{num}'
+    d = os.path.join(out_dir, 'whatsapp')
+    os.makedirs(d, exist_ok=True)
+    e = lambda x: html.escape(x, quote=True)
+    with open(os.path.join(d, 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(WA_PAGE.format(store=e(store), site=SITE, wa=e(wa), wa_js=json.dumps(wa)))
+
+
 def build(out_dir, data):
     store = (data.get('storeName') or 'Casa Tintin').strip()
+    build_whatsapp(out_dir, data, store)
     prods = [p for p in data['products'] if slug(p.get('code'))]
     with concurrent.futures.ThreadPoolExecutor(max_workers=12) as ex:
         imgs = list(ex.map(pick_image, prods))
