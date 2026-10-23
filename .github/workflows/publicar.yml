@@ -1,0 +1,57 @@
+name: Publicar catálogo
+
+# Publica el catálogo en GitHub Pages junto con una ficha por producto (p/CODIGO/),
+# para que al compartir un producto se vea su foto, nombre y precio.
+# Corre al guardar cambios en el repositorio, cada 15 minutos (para tomar productos
+# nuevos o editados en la app de gestión) y a mano desde la pestaña Actions.
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generar fichas de producto
+        run: python3 scripts/fichas.py _site
+
+      - name: ¿Cambió algo desde la última publicación?
+        id: cambios
+        run: |
+          nueva=$(cat _site/p/version.txt)
+          actual=$(curl -fsSL --max-time 20 "https://tienda.casatintin.cl/p/version.txt" || echo "")
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$nueva" = "$actual" ]; then
+            echo "Sin cambios en los productos; no se republica."
+            echo "publicar=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "publicar=si" >> "$GITHUB_OUTPUT"
+          fi
+
+      - if: steps.cambios.outputs.publicar == 'si'
+        uses: actions/configure-pages@v5
+
+      - if: steps.cambios.outputs.publicar == 'si'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - if: steps.cambios.outputs.publicar == 'si'
+        id: deploy
+        uses: actions/deploy-pages@v4

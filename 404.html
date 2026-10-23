@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Casa Tintin</title>
+<meta name="robots" content="noindex">
+<script>
+  /* Link de producto que aún no tiene su ficha (producto recién creado): abre el catálogo con ese producto */
+  (function () {
+    var m = location.pathname.match(/^\/p\/([^\/]+)/);
+    location.replace(m ? '/#' + m[1] : '/');
+  })();
+</script>
+<style>body{margin:0;min-height:100vh;display:grid;place-items:center;font:16px/1.5 system-ui,sans-serif;background:#F6F1EA;color:#2E241E}a{color:inherit;font-weight:600}</style>
+</head>
+<body>
+<p>Abriendo el <a href="/">catálogo de Casa Tintin</a>…</p>
+</body>
+</html>

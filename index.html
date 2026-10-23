@@ -510,7 +510,9 @@ function drawDetail(){
 }
 function move(k){ const n = cur ? galMedia().length : 0; if (vidMode === 'pip' && cur && cur.video) { vidMode = 'closed'; drawVid(); } if (n < 2) return; gi = (gi + k + n) % n; $('#galBox').innerHTML = gal(); }
 async function share(){
-  const p = cur; track(p.code, 'share'); let url = location.href.split('#')[0] + '#' + p.code;
+  const p = cur; track(p.code, 'share'); const ps = String(p.code).replace(/[^A-Za-z0-9_-]/g, '');
+  /* Link con ficha propia (/p/CODIGO/): WhatsApp y redes muestran la foto, el nombre y el precio del producto */
+  let url = /^https?:$/.test(location.protocol) && ps ? `${location.origin}/p/${ps}/` : location.href.split('#')[0] + '#' + p.code;
   const text = `${p.name}\n${isVar(p) ? 'Desde ' : ''}${money(minPrice(p))}\nCódigo: ${p.code}`;
   try { if (navigator.share) { await navigator.share({ title: p.name, text, url }); return; } } catch (e) { if (e && e.name === 'AbortError') return; }
   try { await navigator.clipboard.writeText(`${text}\n${url}`); toast('Link del producto copiado'); }
@@ -896,7 +898,8 @@ let linkCat = null;
 try { const q = new URLSearchParams(location.search).get('c'); if (q) { linkCat = DATA.categories.find(c => slugC(c.name) === slugC(q) || c.id === q) || null; if (linkCat) cat = linkCat.id; } } catch {}
 render();
 if (linkCat) setTimeout(() => { const el = document.getElementById('chips'); if (el) el.scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 400);
-const h = window.__OPEN || decodeURIComponent(location.hash.slice(1)); if (h) openP(h, false);
+const h = window.__OPEN || decodeURIComponent(location.hash.slice(1));
+if (h) { const hs = h.replace(/[^A-Za-z0-9_-]/g, ''), hp = DATA.products.find(x => x.code === h) || DATA.products.find(x => String(x.code).replace(/[^A-Za-z0-9_-]/g, '') === hs); if (hp) openP(hp.code, false); }
 })();
 </script>
 </body>
