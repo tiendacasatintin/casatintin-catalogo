@@ -158,7 +158,7 @@ WA_PAGE = """<!doctype html>
 
 def build_whatsapp(out_dir, data, store):
     """Link corto con marca: tienda.casatintin.cl/whatsapp abre el chat (el número sale del catálogo publicado)."""
-    num = re.sub(r'\D', '', str(data.get('whatsapp') or ''))
+    num = re.sub(r'\D', '', str(data.get('whatsapp') or os.environ.get('WA_NUMERO', '56995298519')))
     if len(num) < 8:
         return
     wa = f'https://wa.me/{num}'
