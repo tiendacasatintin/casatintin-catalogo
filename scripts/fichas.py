@@ -162,11 +162,12 @@ def build_whatsapp(out_dir, data, store):
     if len(num) < 8:
         return
     wa = f'https://wa.me/{num}'
-    d = os.path.join(out_dir, 'whatsapp')
-    os.makedirs(d, exist_ok=True)
     e = lambda x: html.escape(x, quote=True)
-    with open(os.path.join(d, 'index.html'), 'w', encoding='utf-8') as f:
-        f.write(WA_PAGE.format(store=e(store), site=SITE, wa=e(wa), wa_js=json.dumps(wa)))
+    for path in ('whatsapp', 'chat'):
+        d = os.path.join(out_dir, path)
+        os.makedirs(d, exist_ok=True)
+        with open(os.path.join(d, 'index.html'), 'w', encoding='utf-8') as f:
+            f.write(WA_PAGE.format(store=e(store), site=SITE, wa=e(wa), wa_js=json.dumps(wa)).replace(f'{SITE}/whatsapp/', f'{SITE}/{path}/'))
 
 
 def build(out_dir, data):
